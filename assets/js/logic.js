@@ -4,7 +4,9 @@
 //4. Once all the questions have been answered and/or the timer reaches 0, the game should end and display the next page.
 //5. That page should all the use to enter and submit their intials and then store it in the local storage, to then push to the highscores page.
 
+// my global variables.
 var score = 0;
+var index = 0;
 var secondsLeft = 60;
 
 var game = document.querySelectorAll("body");
@@ -13,8 +15,14 @@ var gameStartEl = document.getElementById("start-screen");
 var gameEndEl = document.getElementById("end-screen");
 var questionsEl = document.getElementById("questions");
 var choicesEl = document.getElementById("choices");
+var questionTitle = document.getElementById("question-title");
+var feedbackEl = document.getElementById("feedback");
+var initialsEl = document.getElementById("initials");
+var wrongAudio = new Audio("/assets/sfx/incorrect.wav");
+var rightAudio = new Audio("/assets/sfx/correct.wav");
 
 var generateBtn = document.querySelector("#start");
+var submitBtn = document.getElementById("submit");
 
 function startGame() {
   //timer needs to start
@@ -27,72 +35,113 @@ function startGame() {
     }
   }, 1000);
 
+  // hides the starter screen.
   gameStartEl.setAttribute("class", "hide");
+
+  //removes the attribute that then allows for the questions to be dispalyed..
   questionsEl.removeAttribute("class");
 
   //display questions
+  questionTitle.textContent = questions[index].question;
 
-  for (var i = 0; i < questions.length; i++) {
-    console.log("In first for loop");
-    // console.log(questions[i].question);
-    questionsEl.textContent = questions[i].question;
+  // for loop loops through the questions and the choices. In this scenario it does it three times for the qestions as there is only three and four times for choices as there are four choices.
+  for (var j = 0; j < questions[index].choice.length; j++) {
+    // a button is created and added to a btn choices variable.
+    var btnChoices = document.createElement("button");
 
-    for (var a = 0; a < 4; a++) {
-      console.log(questions[i].choice[a]);
-      var btnChoices = document.createElement("button");
-      btnChoices.setAttribute("value", questions[i].choice[a]);
-      choicesEl.innerHTML = "Hello";
-      // choicesEl.textContent = questions[i].choice[a];
-    }
+    // btn choices is given a class named choices.
+    btnChoices.setAttribute("class", "choices");
+
+    // value is set to each button for each question and the choices.
+    btnChoices.setAttribute("value", questions[index].choice[j]);
+
+    //the text content of the buttons is given four options depending on the question.
+    btnChoices.textContent = questions[index].choice[j];
+
+    // adds the choices buttons to the choices element
+    choicesEl.appendChild(btnChoices);
   }
 
-  //first question needs to be displayed
-  //   if (questions[i] === answer) {
-  //     score++;
-  //     var correctAudio = new Audio("correct.wav");
-  //     correctAudio.play();
-  //     document.write("Correct");
-  //   } else {
-  //     score--;
-  //     var incorrectAudio = new Audio("incorrect.wav");
-  //     incorrectAudio.play();
-  //     document.write("incorrect");
-  //     timerEl - 100;
-  //   }
-
-  //   //second question needs to be displayed
-  //   if (questions[1] === choice3) {
-  //     score++;
-  //     var correctAudio = new Audio("correct.wav");
-  //     correctAudio.play();
-  //     document.write("Correct");
-  //   } else {
-  //     score--;
-  //     var incorrectAudio = new Audio("incorrect.wav");
-  //     incorrectAudio.play();
-  //     document.write("incorrect");
-  //     timerEl - 100;
-  //   }
-
-  //   //third question needs to be displayed
-  //   if (questions[2] === choice4) {
-  //     score++;
-  //     var correctAudio = new Audio("correct.wav");
-  //     correctAudio.play();
-  //     document.write("Correct");
-  //   } else {
-  //     score--;
-  //     var incorrectAudio = new Audio("incorrect.wav");
-  //     incorrectAudio.play();
-  //     document.write("incorrect");
-  //     timerEl - 100;
-  //   }
-  // }
-
-  // function endGame() {
-  //   if (timerEl === 0) {
-  //     gameEndEl;
-  //   }
+  //  increase the index by 1
+  index++;
 }
 
+// This function is checking for the users answers.
+function checkAnswer(event) {
+  // Looking out for the event which is clicking one of the choices buttons.
+  choicesEl = event.target;
+
+  feedbackEl.removeAttribute("class"); // Will allow the feedback to be displayed on the screen.
+
+  //checks to see if the user has picked the right answer.
+  if (choicesEl.value !== questions[index].answer) {
+    // takes away time if wrong
+    secondsLeft -= 15;
+    // takes away from score if wrong
+    score--;
+
+    //displays the new time once it has been taken away.
+    timerEl.textContent = secondsLeft;
+
+    // the incorrect audio is played.
+    wrongAudio.play();
+
+    // the feedback displays "wrong."
+    feedbackEl.textContent = "wrong!";
+  } else {
+    // adds to the score if right.
+    score++;
+
+    // the correct audio is played.
+    rightAudio.play();
+
+    // the feedback displays "correct."
+    feedbackEl.textContent = "Correct!";
+  }
+
+  // this is meant to display the next question.
+  questions[index].question++;
+
+  // if there is no time left of the user has reached the end of the questions, then the game should be ended and the end screen will be displayed.
+  if (secondsLeft <= 0 || questions[index].question === questions.length) {
+    endGame();
+  }
+}
+
+function endGame() {
+  gameEndEl.removeAttribute("class");
+}
+
+function saveHighscore() {
+  // this gets the intials that have been entered.
+  var initials = initialsEl.value.trim();
+
+  // this is checking to make sure the value is empty.
+  if (initials !== "") {
+    // the saved scores will be retrieved from the localstorage, but if there isn't any then it will be set to an empty array.
+    var highscores =
+      JSON.parse(window.localStorage.getItem("highscores")) || [];
+
+    // This is a new score object for the user.
+    var newScore = {
+      score: score,
+      initials: initials,
+    };
+
+    // The users score is pushed into highscores and then is being saved to the local storage.
+    highscores.push(newScore);
+    window.localStorage.setItem("highscores", JSON.stringify(highscores));
+
+    // Sends the user to the next page.
+    window.location.href = "highscores.html";
+  }
+}
+
+// This allows the user to save their highscore.
+submitBtn.addEventListener("click", saveHighscore);
+
+// Executes when the start is clicked.
 generateBtn.addEventListener("click", startGame);
+
+//Executes and checks the answers
+choicesEl.addEventListener("click", checkAnswer);
