@@ -41,6 +41,10 @@ function startGame() {
   //removes the attribute that then allows for the questions to be dispalyed..
   questionsEl.removeAttribute("class");
 
+  displayQuestion();
+}
+
+function displayQuestion() {
   //display questions
   questionTitle.textContent = questions[index].question;
 
@@ -61,9 +65,6 @@ function startGame() {
     // adds the choices buttons to the choices element
     choicesEl.appendChild(btnChoices);
   }
-
-  //  increase the index by 1
-  index++;
 }
 
 // This function is checking for the users answers.
@@ -72,7 +73,8 @@ function checkAnswer(event) {
   choicesEl = event.target;
 
   feedbackEl.removeAttribute("class"); // Will allow the feedback to be displayed on the screen.
-
+  console.log(choicesEl.value);
+  console.log(questions[index].answer);
   //checks to see if the user has picked the right answer.
   if (choicesEl.value !== questions[index].answer) {
     // takes away time if wrong
@@ -97,10 +99,13 @@ function checkAnswer(event) {
 
     // the feedback displays "correct."
     feedbackEl.textContent = "Correct!";
+
+    index++;
+    displayQuestion();
   }
 
-  // this is meant to display the next question.
-  questions[index].question++;
+  // // this is meant to display the next question.
+  // questions[index].question;
 
   // if there is no time left of the user has reached the end of the questions, then the game should be ended and the end screen will be displayed.
   if (secondsLeft <= 0 || questions[index].question === questions.length) {
