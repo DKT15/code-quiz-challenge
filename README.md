@@ -2,7 +2,7 @@
 
 ## Description
 
-I have created my project to demonstrate my knowledge of local storage, if statements etc. I haven't been able to completely finish it just yet, but this is a learning project so will go back to it! Refer to the console in the Chrome dev tools to see what I have done. Refer to the code file to see the code.
+I have created my project to demonstrate my knowledge of local storage, if statements etc. I haven't been able to finish it just yet, but this is a learning project so will go back to it! Refer to the console in the Chrome dev tools to see what I have done. Refer to the code file to see the code.
 
 ## Table of Contents
 
@@ -30,7 +30,7 @@ To use this Prework Study Guide, you can review the notes in each section.
 
 ## Deployment
 
-You can access the website with this link.(https://dkt15.github.io/Prework-Study-Guide/)
+You can access the website with this [link](https://dkt15.github.io/Prework-Study-Guide/)
 
 ## Contributing
 
